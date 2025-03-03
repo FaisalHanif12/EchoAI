@@ -1,2 +1,2 @@
-![Alt text](images/chatbotDark.png)
+![Alt text](Images/chatbotDark.png)
 

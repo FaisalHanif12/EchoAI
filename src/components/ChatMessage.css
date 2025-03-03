@@ -1,0 +1,87 @@
+.message-wrapper {
+  display: flex;
+  margin-bottom: 15px;
+  animation: messageAppear 0.4s ease-out;
+  max-width: 100%;
+}
+
+.user-message {
+  justify-content: flex-end;
+}
+
+.bot-message {
+  justify-content: flex-start;
+}
+
+.message-bubble {
+  max-width: 70%;
+  padding: 12px 18px;
+  border-radius: 18px;
+  word-wrap: break-word;
+  line-height: 1.4;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.user-message .message-bubble {
+  background: linear-gradient(135deg, #00c6fb 0%, #005bea 100%);
+  color: white;
+  border-bottom-right-radius: 4px;
+  box-shadow: 0 3px 10px rgba(0, 91, 234, 0.2);
+  animation: userMessageBounce 0.5s ease;
+}
+
+.bot-message .message-bubble {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.2));
+  color: inherit;
+  border-bottom-left-radius: 4px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+}
+
+.dark-mode .bot-message .message-bubble {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.1));
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+.message-bubble::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  width: 20px;
+  height: 20px;
+  background: inherit;
+  z-index: -1;
+}
+
+.user-message .message-bubble::before {
+  right: -5px;
+  border-bottom-left-radius: 15px;
+}
+
+.bot-message .message-bubble::before {
+  left: -5px;
+  border-bottom-right-radius: 15px;
+}
+
+@keyframes messageAppear {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes userMessageBounce {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}

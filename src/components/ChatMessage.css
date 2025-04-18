@@ -3,6 +3,7 @@
   margin-bottom: 15px;
   animation: messageAppear 0.4s ease-out;
   max-width: 100%;
+  align-items: flex-end;
 }
 
 .user-message {
@@ -29,6 +30,7 @@
   border-bottom-right-radius: 4px;
   box-shadow: 0 3px 10px rgba(0, 91, 234, 0.2);
   animation: userMessageBounce 0.5s ease;
+  margin-right: 8px;
 }
 
 .bot-message .message-bubble {
@@ -36,6 +38,7 @@
   color: inherit;
   border-bottom-left-radius: 4px;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+  margin-left: 8px;
 }
 
 .dark-mode .bot-message .message-bubble {
@@ -61,6 +64,55 @@
 .bot-message .message-bubble::before {
   left: -5px;
   border-bottom-right-radius: 15px;
+}
+
+/* Avatar styling */
+.bot-avatar, .user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.dark-mode .bot-avatar, .dark-mode .user-avatar {
+  background: #333;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.bot-avatar svg, .user-avatar svg {
+  width: 36px;
+  height: 36px;
+}
+
+/* Message content formatting */
+.message-content p {
+  margin: 0 0 8px 0;
+}
+
+.message-content p:last-child {
+  margin-bottom: 0;
+}
+
+.message-content .message-list {
+  margin: 0 0 8px 0;
+  padding-left: 20px;
+}
+
+.message-content .message-list:last-child {
+  margin-bottom: 0;
+}
+
+.message-content .message-list li {
+  margin-bottom: 4px;
+}
+
+.message-content .message-list li:last-child {
+  margin-bottom: 0;
 }
 
 @keyframes messageAppear {

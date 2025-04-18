@@ -4,6 +4,7 @@ import ChatMessage from './components/ChatMessage';
 import DarkModeToggle from './components/DarkModeToggle';
 import geminiService from './services/geminiService';
 import ChatSidebar from './components/ChatSidebar';
+import PromptSuggestions from './components/PromptSuggestions';
 
 function App() {
   const [messages, setMessages] = useState([]);
@@ -14,6 +15,7 @@ function App() {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [chatHistory, setChatHistory] = useState([]);
   const [currentChatId, setCurrentChatId] = useState(null);
+  const [showSuggestions, setShowSuggestions] = useState(true);
   const messagesEndRef = useRef(null);
   const recognitionRef = useRef(null);
   
@@ -35,6 +37,15 @@ function App() {
     scrollToBottom();
   }, [messages]);
   
+  // Hide suggestions when we have messages
+  useEffect(() => {
+    if (messages.length > 0) {
+      setShowSuggestions(false);
+    } else {
+      setShowSuggestions(true);
+    }
+  }, [messages]);
+  
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -49,6 +60,12 @@ function App() {
   
   const handleInputChange = (e) => {
     setInputValue(e.target.value);
+  };
+  
+  const handlePromptSelect = (prompt) => {
+    setInputValue(prompt);
+    // Focus the input field after selecting a prompt
+    document.querySelector('.message-input').focus();
   };
   
   // Generate a title based on the first message
@@ -306,7 +323,7 @@ function App() {
         <div className="messages-container">
           {messages.length === 0 && !isTyping && (
             <div className="welcome-message">
-              <h2>What can I help you?</h2>
+              <h2>How can I help you today?</h2>
             </div>
           )}
           
@@ -315,39 +332,56 @@ function App() {
               key={index} 
               message={message.text} 
               isUser={message.isUser} 
+              timestamp={message.timestamp}
             />
           ))}
           
           {isTyping && (
             <div className="typing-indicator">
-              <div className="dot"></div>
-              <div className="dot"></div>
-              <div className="dot"></div>
+              <div className="bot-avatar">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="10" fill="#7c4dff" className="avatar-circle" />
+                  <path d="M8 14s1.5 2 4 2 4-2 4-2" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
+                  <circle cx="9" cy="10" r="1.5" fill="white" />
+                  <circle cx="15" cy="10" r="1.5" fill="white" />
+                </svg>
+              </div>
+              <div className="typing-bubble">
+                <div className="dot"></div>
+                <div className="dot"></div>
+                <div className="dot"></div>
+              </div>
             </div>
           )}
           
           <div ref={messagesEndRef} />
         </div>
         
-        <form className="input-container" onSubmit={handleSubmit}>
-          <input
-            type="text"
-            value={inputValue}
-            onChange={handleInputChange}
-            placeholder="Type a message..."
-            className="message-input"
-          />
-          <button 
-            type="button" 
-            className={`voice-button ${isListening ? 'active' : ''}`}
-            onClick={toggleVoiceInput}
-          >
-            <i className="fas fa-microphone"></i>
-          </button>
-          <button type="submit" className="send-button">
-            <i className="fas fa-paper-plane"></i>
-          </button>
-        </form>
+        <div className="input-section">
+          {showSuggestions && (
+            <PromptSuggestions onSelectPrompt={handlePromptSelect} />
+          )}
+          
+          <form className="input-container" onSubmit={handleSubmit}>
+            <input
+              type="text"
+              value={inputValue}
+              onChange={handleInputChange}
+              placeholder="Type a message..."
+              className="message-input"
+            />
+            <button 
+              type="button" 
+              className={`voice-button ${isListening ? 'active' : ''}`}
+              onClick={toggleVoiceInput}
+            >
+              <i className="fas fa-microphone"></i>
+            </button>
+            <button type="submit" className="send-button">
+              <i className="fas fa-paper-plane"></i>
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );

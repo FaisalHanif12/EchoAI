@@ -22,6 +22,33 @@ const ChatMessage = ({ message, isUser, timestamp }) => {
       return part;
     });
   };
+  
+  // Function to format markdown-style bold and italic text
+  const formatMarkdown = (text) => {
+    if (!text) return '';
+    
+    // Handle bold with ** or __
+    let formatted = text.replace(/\*\*(.*?)\*\*|__(.*?)__/g, '<strong>$1$2</strong>');
+    
+    // Handle italic with * or _
+    formatted = formatted.replace(/\*(.*?)\*|_(.*?)_/g, '<em>$1$2</em>');
+    
+    // Convert formatted text to JSX
+    // Split by HTML tags and rebuild with React elements
+    const parts = formatted.split(/(<\/?[^>]+>)/);
+    
+    return parts.map((part, i) => {
+      if (part.startsWith('<strong>') && part.endsWith('</strong>')) {
+        const content = part.substring(8, part.length - 9);
+        return <strong key={i}>{formatLinks(content)}</strong>;
+      } else if (part.startsWith('<em>') && part.endsWith('</em>')) {
+        const content = part.substring(4, part.length - 5);
+        return <em key={i}>{formatLinks(content)}</em>;
+      } else {
+        return formatLinks(part);
+      }
+    });
+  };
 
   // Function to format the message with enhanced markdown-like formatting
   const formatMessage = (text) => {
@@ -33,9 +60,21 @@ const ChatMessage = ({ message, isUser, timestamp }) => {
     return paragraphs.map((paragraph, paragraphIndex) => {
       // Check if paragraph is a code block (```code```)
       if (paragraph.startsWith('```') && paragraph.endsWith('```')) {
-        const code = paragraph.substring(3, paragraph.length - 3);
+        // Check for language specification
+        const firstLineBreak = paragraph.indexOf('\n');
+        let language = '';
+        let code = '';
+        
+        if (firstLineBreak > 3) {
+          language = paragraph.substring(3, firstLineBreak).trim();
+          code = paragraph.substring(firstLineBreak + 1, paragraph.length - 3);
+        } else {
+          code = paragraph.substring(3, paragraph.length - 3);
+        }
+        
         return (
-          <div key={paragraphIndex} className="code-block">
+          <div key={paragraphIndex} className={`code-block ${language ? `language-${language}` : ''}`}>
+            {language && <div className="code-language">{language}</div>}
             <pre><code>{code}</code></pre>
           </div>
         );
@@ -53,7 +92,7 @@ const ChatMessage = ({ message, isUser, timestamp }) => {
           .split('\n')
           .filter(item => item.trim().startsWith('- ') || item.trim().startsWith('• '))
           .map((item, itemIndex) => (
-            <li key={itemIndex}>{formatLinks(item.replace(/^-\s|•\s/, ''))}</li>
+            <li key={itemIndex}>{formatMarkdown(item.replace(/^-\s|•\s/, ''))}</li>
           ));
         
         return <ul key={paragraphIndex} className="message-list">{listItems}</ul>;
@@ -65,14 +104,14 @@ const ChatMessage = ({ message, isUser, timestamp }) => {
           .split('\n')
           .filter(item => /^\d+\.\s/.test(item.trim()))
           .map((item, itemIndex) => (
-            <li key={itemIndex}>{formatLinks(item.replace(/^\d+\.\s/, ''))}</li>
+            <li key={itemIndex}>{formatMarkdown(item.replace(/^\d+\.\s/, ''))}</li>
           ));
         
         return <ol key={paragraphIndex} className="message-list">{listItems}</ol>;
       }
       
       // Regular paragraph
-      return <p key={paragraphIndex}>{formatLinks(paragraph)}</p>;
+      return <p key={paragraphIndex}>{formatMarkdown(paragraph)}</p>;
     });
   };
   
@@ -120,7 +159,10 @@ const ChatMessage = ({ message, isUser, timestamp }) => {
   
   return (
     <div className={`message-wrapper ${isUser ? 'user-message' : 'bot-message'}`}>
-      {!isUser && botAvatar}
+      {/* Always render both avatars but position them based on isUser */}
+      <div className={isUser ? 'hidden' : ''}>
+        {botAvatar}
+      </div>
       <div className="message-container">
         <div className="message-bubble">
           <div className="message-content">
@@ -129,7 +171,9 @@ const ChatMessage = ({ message, isUser, timestamp }) => {
         </div>
         {displayTime && <div className="message-timestamp">{displayTime}</div>}
       </div>
-      {isUser && userAvatar}
+      <div className={!isUser ? 'hidden' : ''}>
+        {userAvatar}
+      </div>
     </div>
   );
 };

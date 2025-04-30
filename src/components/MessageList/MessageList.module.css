@@ -22,14 +22,19 @@
 }
 
 .messageAvatar {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   flex-shrink: 0;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
+  transition: transform var(--transition-fast);
+}
+
+.messageAvatar:hover {
+  transform: scale(1.1);
 }
 
 .userAvatar {
@@ -48,18 +53,22 @@
   padding: var(--spacing-md);
   border-radius: var(--border-radius-md);
   max-width: calc(100% - 50px);
+  transition: transform var(--transition-fast);
+}
+
+.messageContent:hover {
+  transform: translateY(-2px);
 }
 
 .userMessage .messageContent {
-  background-color: var(--color-user-bubble);
-  color: var(--color-user-text);
   border-top-right-radius: 0;
+  background: linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-secondary));
+  color: var(--color-user-text);
 }
 
 .botMessage .messageContent {
-  background-color: var(--color-bot-bubble);
-  color: var(--color-bot-text);
   border-top-left-radius: 0;
+  color: var(--color-bot-text);
 }
 
 .messageHeader {
@@ -96,7 +105,7 @@
   cursor: pointer;
   padding: var(--spacing-xs);
   border-radius: 50%;
-  transition: opacity var(--transition-fast), background-color var(--transition-fast);
+  transition: opacity var(--transition-fast), background-color var(--transition-fast), transform var(--transition-fast);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -105,11 +114,13 @@
 .speakButton:hover {
   opacity: 1;
   background-color: rgba(0, 0, 0, 0.1);
+  transform: scale(1.2);
 }
 
 .speakButton.speaking {
   opacity: 1;
   color: var(--color-accent-primary);
+  animation: pulse 2s infinite;
 }
 
 .imageContainer {
@@ -125,6 +136,18 @@
   border-radius: var(--border-radius-sm);
 }
 
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -133,5 +156,11 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .messageContainer {
+    max-width: 95%;
   }
 }

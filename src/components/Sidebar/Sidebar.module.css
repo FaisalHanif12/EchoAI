@@ -1,4 +1,16 @@
 
+.overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+  z-index: 4;
+}
+
 .sidebar {
   display: flex;
   flex-direction: column;
@@ -15,6 +27,27 @@
   border-bottom: 1px solid var(--color-border);
 }
 
+.headerBranding {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+}
+
+.logoIcon {
+  color: var(--color-accent-primary);
+  margin-right: var(--spacing-sm);
+}
+
+.headerTitle {
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  background: linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-secondary));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  flex-grow: 1;
+}
+
 .newChatButton {
   display: flex;
   align-items: center;
@@ -22,19 +55,19 @@
   gap: var(--spacing-sm);
   width: 100%;
   padding: var(--spacing-md);
-  border-radius: var(--border-radius-md);
-  background-color: var(--color-accent-primary);
+  border-radius: 9999px;
+  background: linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-secondary));
   color: white;
   font-weight: 500;
   border: none;
   cursor: pointer;
-  transition: background-color var(--transition-fast);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
   margin-bottom: var(--spacing-md);
 }
 
 .newChatButton:hover {
-  background-color: var(--color-accent-primary);
-  opacity: 0.9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
 }
 
 .searchContainer {
@@ -94,15 +127,14 @@
   border-radius: var(--border-radius-md);
   margin-bottom: var(--spacing-md);
   cursor: pointer;
-  transition: background-color var(--transition-fast);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .sessionItem:hover {
-  background-color: var(--color-bg-primary);
+  transform: translateY(-2px);
 }
 
 .sessionItem.active {
-  background-color: var(--color-bg-primary);
   border-left: 3px solid var(--color-accent-primary);
 }
 
@@ -199,9 +231,6 @@
 
 .closeSidebar {
   display: none;
-  position: absolute;
-  right: var(--spacing-md);
-  top: var(--spacing-md);
   background: none;
   border: none;
   color: var(--color-text-primary);
@@ -211,9 +240,13 @@
 }
 
 /* Mobile styles */
-@media (max-width: 768px) {
+@media (max-width: 1023px) {
+  .overlay {
+    display: block;
+  }
+
   .sidebar {
-    position: absolute;
+    position: fixed;
     top: 0;
     bottom: 0;
     left: 0;

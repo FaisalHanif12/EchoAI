@@ -1,98 +1,107 @@
 
 import React, { useState } from 'react';
-import { useChat, Message } from '../../contexts/ChatContext';
+import { useChat } from '../../contexts/ChatContext';
 import styles from './MessageList.module.css';
 
 const MessageList: React.FC = () => {
   const { currentSession } = useChat();
   const [speakingMessageId, setSpeakingMessageId] = useState<string | null>(null);
   
-  if (!currentSession) {
-    return null;
-  }
-
-  // Format timestamp to display hour and minute
+  // Function to format the timestamp
   const formatTime = (timestamp: number) => {
-    const date = new Date(timestamp);
-    return date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+    return new Date(timestamp).toLocaleTimeString(undefined, {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   };
-
-  // Text-to-speech function for bot messages
-  const speakMessage = (message: Message) => {
+  
+  // Speech synthesis for bot messages
+  const speak = (text: string, messageId: string) => {
     if ('speechSynthesis' in window) {
-      // Cancel any ongoing speech
+      // Stop any current speech
       window.speechSynthesis.cancel();
       
-      if (speakingMessageId === message.id) {
+      if (speakingMessageId === messageId) {
         setSpeakingMessageId(null);
         return;
       }
       
-      const utterance = new SpeechSynthesisUtterance(message.content);
+      const utterance = new SpeechSynthesisUtterance(text);
       utterance.onend = () => setSpeakingMessageId(null);
-      utterance.onerror = () => setSpeakingMessageId(null);
-      
-      setSpeakingMessageId(message.id);
+      setSpeakingMessageId(messageId);
       window.speechSynthesis.speak(utterance);
     }
   };
+  
+  // If there's no current session or no messages, return null
+  if (!currentSession || !currentSession.messages || currentSession.messages.length === 0) {
+    return null;
+  }
 
   return (
     <div className={styles.messageList}>
       {currentSession.messages.map((message) => (
-        <div 
-          key={message.id} 
+        <div
+          key={message.id}
           className={`${styles.messageContainer} ${
             message.role === 'user' ? styles.userMessage : styles.botMessage
           }`}
         >
-          <div className={styles.messageAvatar}>
+          <div 
+            className={`${styles.messageAvatar} ${
+              message.role === 'user' ? styles.userAvatar : styles.botAvatar
+            }`}
+          >
             {message.role === 'user' ? (
-              <div className={styles.userAvatar}>U</div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
             ) : (
-              <div className={styles.botAvatar}>AI</div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 2c-4.42 0-8 3.58-8 8 0 4.95 8 12 8 12s8-7.05 8-12c0-4.42-3.58-8-8-8zm0 11c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z" />
+              </svg>
             )}
           </div>
           
-          <div className={styles.messageContent}>
+          <div className={`${styles.messageContent} glass-card`}>
             <div className={styles.messageHeader}>
               <span className={styles.messageSender}>
-                {message.role === 'user' ? 'You' : 'AI Assistant'}
+                {message.role === 'user' ? 'You' : 'EchoAI'}
               </span>
-              <span className={styles.messageTime}>
-                {formatTime(message.timestamp)}
-              </span>
+              <span className={styles.messageTime}>{formatTime(message.timestamp)}</span>
             </div>
             
-            {message.imageUrl && (
+            {message.image && (
               <div className={styles.imageContainer}>
                 <img 
-                  src={message.imageUrl} 
-                  alt="Uploaded by user" 
+                  src={message.image} 
+                  alt="Uploaded by user"
                   className={styles.uploadedImage}
                 />
               </div>
             )}
             
-            <div className={styles.messageText}>
-              {message.content}
-            </div>
+            <div className={styles.messageText}>{message.content}</div>
             
-            {message.role === 'assistant' && (
-              <button 
+            {message.role !== 'user' && (
+              <button
                 className={`${styles.speakButton} ${speakingMessageId === message.id ? styles.speaking : ''}`}
-                onClick={() => speakMessage(message)}
-                aria-label={speakingMessageId === message.id ? "Stop speaking" : "Speak this message"}
+                onClick={() => speak(message.content, message.id)}
+                title={speakingMessageId === message.id ? "Stop speaking" : "Read aloud"}
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  {speakingMessageId === message.id ? (
-                    <path d="M11 5L6 9H2v6h4l5 4V5zM19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07" 
-                      stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  ) : (
-                    <path d="M11 5L6 9H2v6h4l5 4V5zM15.54 8.46a5 5 0 010 7.07" 
-                      stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  )}
-                </svg>
+                {speakingMessageId === message.id ? (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="6" y="4" width="4" height="16" rx="1" />
+                    <rect x="14" y="4" width="4" height="16" rx="1" />
+                  </svg>
+                ) : (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M11 5L6 9H2v6h4l5 4V5z" />
+                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+                  </svg>
+                )}
               </button>
             )}
           </div>

@@ -25,7 +25,14 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, isSidebarOpen }) => {
             <rect x="3" y="17" width="18" height="2" rx="1" fill="currentColor" />
           </svg>
         </button>
-        <h1 className={styles.title}>AI Chat</h1>
+        <div className={styles.logo}>
+          <svg className={styles.logoIcon} width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          <h1 className={styles.title}>EchoAI</h1>
+        </div>
       </div>
       
       <div className={styles.rightSection}>

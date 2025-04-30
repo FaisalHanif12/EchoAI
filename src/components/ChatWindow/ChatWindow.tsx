@@ -20,6 +20,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ sidebarOpen }) => {
   
   const [inputValue, setInputValue] = useState('');
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [webSearchEnabled, setWebSearchEnabled] = useState(false);
+  const [imageAnalysisEnabled, setImageAnalysisEnabled] = useState(false);
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
   
   // Scroll to bottom when messages change or when loading completes
@@ -35,15 +37,30 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ sidebarOpen }) => {
     setInputValue(prompt);
   };
 
+  const toggleWebSearch = () => {
+    setWebSearchEnabled(prev => !prev);
+  };
+
+  const toggleImageAnalysis = () => {
+    setImageAnalysisEnabled(prev => !prev);
+  };
+
   const renderEmptyState = () => (
     <div className={styles.emptyState}>
-      <div className={styles.emptyStateContent}>
-        <h2 className={styles.emptyStateTitle}>Welcome to AI Chat</h2>
+      <div className={`${styles.emptyStateContent} glass-card`}>
+        <div className={styles.logoContainer}>
+          <svg className={styles.logo} width="64" height="64" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+        <h2 className={styles.emptyStateTitle}>Welcome to EchoAI</h2>
         <p className={styles.emptyStateDescription}>
           Start a new conversation or select an existing one from the sidebar.
         </p>
         <button 
-          className={styles.startButton}
+          className={`${styles.startButton} pill-button hover-transition`}
           onClick={createNewSession}
         >
           Start new chat
@@ -59,7 +76,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ sidebarOpen }) => {
           <div className={styles.messageContainer}>
             <MessageList />
             {isLoading && (
-              <div className={styles.typingIndicator}>
+              <div className={`${styles.typingIndicator} glass-card`}>
                 <div className={styles.dot}></div>
                 <div className={styles.dot}></div>
                 <div className={styles.dot}></div>
@@ -67,7 +84,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ sidebarOpen }) => {
               </div>
             )}
             {error && (
-              <div className={styles.errorMessage}>
+              <div className={`${styles.errorMessage} glass-card`}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                   <path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" 
                     stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -82,12 +99,38 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ sidebarOpen }) => {
             {currentSession && (
               <>
                 <PromptSuggestions onSelectPrompt={handlePromptSelect} />
+                <div className={styles.togglesContainer}>
+                  <div className={styles.toggleWrapper}>
+                    <span>Web Search</span>
+                    <button 
+                      className={`${styles.toggleButton} ${webSearchEnabled ? styles.toggleActive : ''}`}
+                      onClick={toggleWebSearch}
+                      aria-label={webSearchEnabled ? "Disable web search" : "Enable web search"}
+                      aria-pressed={webSearchEnabled}
+                    >
+                      <span className={styles.toggleSlider}></span>
+                    </button>
+                  </div>
+                  <div className={styles.toggleWrapper}>
+                    <span>Image Analysis</span>
+                    <button 
+                      className={`${styles.toggleButton} ${imageAnalysisEnabled ? styles.toggleActive : ''}`}
+                      onClick={toggleImageAnalysis}
+                      aria-label={imageAnalysisEnabled ? "Disable image analysis" : "Enable image analysis"}
+                      aria-pressed={imageAnalysisEnabled}
+                    >
+                      <span className={styles.toggleSlider}></span>
+                    </button>
+                  </div>
+                </div>
                 <ChatInput 
                   value={inputValue}
                   onChange={setInputValue}
                   uploadedImage={uploadedImage}
                   onClearImage={() => setUploadedImage(null)}
                   onImageUpload={setUploadedImage}
+                  webSearchEnabled={webSearchEnabled}
+                  imageAnalysisEnabled={imageAnalysisEnabled}
                 />
               </>
             )}

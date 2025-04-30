@@ -33,7 +33,7 @@ const ChatInterface: React.FC = () => {
           {(isSidebarOpen || !isMobile) && 
             <Sidebar isOpen={isSidebarOpen} closeSidebar={() => setIsSidebarOpen(false)} />
           }
-          <ChatWindow sidebarOpen={isSidebarOpen && !isMobile} />
+          <ChatWindow sidebarOpen={isSidebarOpen} />
         </div>
       </div>
     </ChatProvider>

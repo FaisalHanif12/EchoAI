@@ -21,8 +21,9 @@
 .messageContainer {
   flex: 1;
   overflow-y: auto;
-  padding: var(--spacing-md) var(--spacing-md) 120px var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-md) 180px var(--spacing-md);
   scroll-behavior: smooth;
+  height: calc(100vh - 60px);
 }
 
 .promptSuggestionsContainer {
@@ -90,12 +91,19 @@
 }
 
 .inputArea {
-  position: absolute;
+  position: fixed;
   bottom: 0;
   width: 100%;
   padding: var(--spacing-md);
   background: linear-gradient(0deg, var(--color-bg-primary) 80%, transparent);
   z-index: 10;
+  left: 0;
+  right: 0;
+}
+
+.withSidebar .inputArea {
+  width: calc(100% - 320px);
+  left: 320px;
 }
 
 .typingIndicator {
@@ -204,6 +212,11 @@
     margin-left: 0;
   }
   
+  .withSidebar .inputArea {
+    width: 100%;
+    left: 0;
+  }
+  
   .messageContainer {
     padding-bottom: 180px;
   }
@@ -225,7 +238,12 @@
     margin-left: 280px;
   }
   
+  .withSidebar .inputArea {
+    width: calc(100% - 280px);
+    left: 280px;
+  }
+  
   .messageContainer {
-    padding-bottom: 150px;
+    padding-bottom: 180px;
   }
 }

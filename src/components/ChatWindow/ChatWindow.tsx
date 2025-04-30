@@ -1,6 +1,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useChat } from '../../contexts/ChatContext';
+import { useIsMobile } from '../../hooks/use-mobile';
 import MessageList from '../MessageList/MessageList';
 import ChatInput from '../ChatInput/ChatInput';
 import PromptSuggestions from '../PromptSuggestions/PromptSuggestions';
@@ -23,11 +24,17 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ sidebarOpen }) => {
   const [webSearchEnabled, setWebSearchEnabled] = useState(false);
   const [imageAnalysisEnabled, setImageAnalysisEnabled] = useState(false);
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
   
   // Scroll to bottom when messages change or when loading completes
   useEffect(() => {
     scrollToBottom();
   }, [currentSession?.messages, isLoading]);
+
+  // Scroll to bottom when component mounts
+  useEffect(() => {
+    scrollToBottom();
+  }, []);
 
   const scrollToBottom = () => {
     endOfMessagesRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -70,7 +77,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ sidebarOpen }) => {
   );
 
   return (
-    <main className={`${styles.chatWindow} ${sidebarOpen ? styles.withSidebar : styles.fullWidth}`}>
+    <main className={`${styles.chatWindow} ${sidebarOpen && !isMobile ? styles.withSidebar : styles.fullWidth}`}>
       {!currentSession ? renderEmptyState() : (
         <>
           <div className={styles.messageContainer}>

@@ -29,7 +29,10 @@ const ChatInterface: React.FC = () => {
       <div className={styles.chatInterface}>
         <Header toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
         <div className={styles.content}>
-          <Sidebar isOpen={isSidebarOpen} closeSidebar={() => setIsSidebarOpen(false)} />
+          {/* On mobile, sidebar is only visible when open */}
+          {(isSidebarOpen || !isMobile) && 
+            <Sidebar isOpen={isSidebarOpen} closeSidebar={() => setIsSidebarOpen(false)} />
+          }
           <ChatWindow sidebarOpen={isSidebarOpen && !isMobile} />
         </div>
       </div>

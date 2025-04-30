@@ -98,7 +98,9 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ sidebarOpen }) => {
           <div className={styles.inputArea}>
             {currentSession && (
               <>
-                <PromptSuggestions onSelectPrompt={handlePromptSelect} />
+                <div className={styles.promptSuggestionsContainer}>
+                  <PromptSuggestions onSelectPrompt={handlePromptSelect} />
+                </div>
                 <div className={styles.togglesContainer}>
                   <div className={styles.toggleWrapper}>
                     <span>Web Search</span>

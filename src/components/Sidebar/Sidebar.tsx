@@ -57,20 +57,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, closeSidebar }) => {
       {isOpen && <div className={styles.overlay} onClick={closeSidebar}></div>}
       <aside className={`${styles.sidebar} ${isOpen ? styles.open : ''}`}>
         <div className={styles.sidebarHeader}>
-          <div className={styles.headerBranding}>
-            <svg className={styles.logoIcon} width="28" height="28" viewBox="0 0 24 24" fill="none">
-              <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            <h2 className={styles.headerTitle}>EchoAI</h2>
-            <button className={styles.closeSidebar} onClick={closeSidebar} aria-label="Close sidebar">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-              </svg>
-            </button>
-          </div>
-        
           <button 
             className={`${styles.newChatButton} pill-button hover-transition`}
             onClick={createNewSession}
@@ -105,6 +91,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, closeSidebar }) => {
               </button>
             )}
           </div>
+          
+          <button className={styles.closeSidebar} onClick={closeSidebar} aria-label="Close sidebar">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+          </button>
         </div>
         
         <div className={styles.sessionList}>

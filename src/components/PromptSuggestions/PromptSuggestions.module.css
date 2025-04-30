@@ -1,12 +1,19 @@
 
 .suggestionsContainer {
   display: flex;
-  gap: var(--spacing-md);
+  width: 100%;
   margin-bottom: var(--spacing-md);
   overflow-x: auto;
-  padding-bottom: var(--spacing-sm);
   scrollbar-width: thin;
   scrollbar-color: var(--color-accent-primary) var(--color-bg-secondary);
+}
+
+.suggestions {
+  display: flex;
+  gap: var(--spacing-md);
+  padding-bottom: var(--spacing-sm);
+  flex-wrap: nowrap;
+  width: 100%;
 }
 
 .suggestionsContainer::-webkit-scrollbar {
@@ -44,12 +51,14 @@
 }
 
 @media (max-width: 768px) {
-  .suggestionsContainer {
+  .suggestions {
     gap: var(--spacing-sm);
+    justify-content: flex-start;
   }
   
   .suggestionButton {
     padding: var(--spacing-xs) var(--spacing-md);
     font-size: var(--font-size-xs);
+    flex-shrink: 0;
   }
 }

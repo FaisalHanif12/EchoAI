@@ -1,189 +1,212 @@
-
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 
+interface ChatContextProps {
+  sessions: ChatSession[];
+  currentSessionId: string | null;
+  currentSession: ChatSession | undefined;
+  createNewSession: () => void;
+  switchSession: (sessionId: string) => void;
+  deleteSession: (sessionId: string) => void;
+  addMessageToSession: (sessionId: string, message: Message) => void;
+  sendMessage: (content: string, image?: string) => void;
+  updateSessionName: (sessionId: string, newName: string) => void;
+  isLoading: boolean;
+  error: string | null;
+  webSearchEnabled: boolean;
+  imageAnalysisEnabled: boolean;
+  toggleWebSearch: () => void;
+  toggleImageAnalysis: () => void;
+}
+
+// Define the structure of a message
 export interface Message {
   id: string;
   content: string;
   role: 'user' | 'assistant';
   timestamp: number;
-  imageUrl?: string;
+  image?: string;
 }
 
+// Define the structure of a chat session
 export interface ChatSession {
   id: string;
   name: string;
-  messages: Message[];
   timestamp: number;
+  messages: Message[];
   lastMessage?: string;
 }
 
-interface ChatContextType {
-  sessions: ChatSession[];
-  currentSessionId: string | null;
-  isLoading: boolean;
-  error: string | null;
-  createNewSession: () => void;
-  switchSession: (sessionId: string) => void;
-  sendMessage: (content: string, imageUrl?: string) => Promise<void>;
-  deleteSession: (sessionId: string) => void;
-  updateSessionName: (sessionId: string, name: string) => void;
-  clearError: () => void;
-  currentSession: ChatSession | null;
-}
+// Create the ChatContext
+const ChatContext = createContext<ChatContextProps | undefined>(undefined);
 
-const ChatContext = createContext<ChatContextType | undefined>(undefined);
-
+// Create a ChatProvider component
 export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [sessions, setSessions] = useState<ChatSession[]>(() => {
-    const savedSessions = localStorage.getItem('chatSessions');
-    return savedSessions ? JSON.parse(savedSessions) : [];
-  });
-  
-  const [currentSessionId, setCurrentSessionId] = useState<string | null>(() => {
-    const saved = localStorage.getItem('currentSessionId');
-    return saved || (sessions.length > 0 ? sessions[0].id : null);
-  });
-  
+  const [sessions, setSessions] = useState<ChatSession[]>([]);
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [webSearchEnabled, setWebSearchEnabled] = useState(false);
+  const [imageAnalysisEnabled, setImageAnalysisEnabled] = useState(false);
 
-  // Save sessions to localStorage whenever they change
+  // Load sessions from localStorage on component mount
+  useEffect(() => {
+    const storedSessions = localStorage.getItem('chatSessions');
+    if (storedSessions) {
+      setSessions(JSON.parse(storedSessions));
+    }
+  }, []);
+
+  // Save sessions to localStorage whenever sessions change
   useEffect(() => {
     localStorage.setItem('chatSessions', JSON.stringify(sessions));
   }, [sessions]);
 
-  // Save current session ID to localStorage
-  useEffect(() => {
-    if (currentSessionId) {
-      localStorage.setItem('currentSessionId', currentSessionId);
-    }
-  }, [currentSessionId]);
+  // Get the current session
+  const currentSession = sessions.find(session => session.id === currentSessionId);
 
-  const currentSession = currentSessionId 
-    ? sessions.find(session => session.id === currentSessionId) || null
-    : null;
-
+  // Function to create a new chat session
   const createNewSession = () => {
     const newSession: ChatSession = {
-      id: Date.now().toString(),
-      name: `Chat ${sessions.length + 1}`,
+      id: uuidv4(),
+      name: 'New Chat',
+      timestamp: Date.now(),
       messages: [],
-      timestamp: Date.now()
     };
-    
-    setSessions(prev => [newSession, ...prev]);
+    setSessions([...sessions, newSession]);
     setCurrentSessionId(newSession.id);
   };
 
+  // Function to switch to a different chat session
   const switchSession = (sessionId: string) => {
     setCurrentSessionId(sessionId);
   };
 
-  const sendMessage = async (content: string, imageUrl?: string) => {
-    if (!content && !imageUrl) return;
-    if (!currentSessionId) {
-      createNewSession();
+  // Function to delete a chat session
+  const deleteSession = (sessionId: string) => {
+    setSessions(sessions.filter(session => session.id !== sessionId));
+    if (currentSessionId === sessionId) {
+      setCurrentSessionId(null);
     }
-    
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      content,
-      role: 'user',
-      timestamp: Date.now(),
-      imageUrl
-    };
-    
-    // Add user message to current session
-    setSessions(prev => prev.map(session => {
-      if (session.id === currentSessionId) {
+  };
+
+  // Function to add a message to a chat session
+  const addMessageToSession = (sessionId: string, message: Message) => {
+    setSessions(sessions.map(session => {
+      if (session.id === sessionId) {
         return {
           ...session,
-          messages: [...session.messages, userMessage],
-          lastMessage: content,
-          timestamp: Date.now()
+          messages: [...session.messages, message],
+          lastMessage: message.content,
         };
       }
       return session;
     }));
-    
-    // Call GPT API
+  };
+
+  // Function to send a message
+  const sendMessage = async (content: string, image?: string) => {
+    if (!currentSessionId) {
+      console.error('No current session.');
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
-    
+
+    // Add user message to the session
+    const userMessage: Message = {
+      id: uuidv4(),
+      content: content,
+      role: 'user',
+      timestamp: Date.now(),
+      image: image,
+    };
+    addMessageToSession(currentSessionId, userMessage);
+
     try {
-      // In a real app, we'd make an API call here to OpenAI
-      // For this demo, we'll simulate a delay and response
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      const botMessage: Message = {
-        id: Date.now().toString(),
-        content: `This is a simulated response to: "${content}".\n\nIn a real implementation, this would connect to the OpenAI GPT-4o API endpoint.`,
+      // Simulate an API call to get a response from the AI
+      const response = await simulateAICall(content, webSearchEnabled, imageAnalysisEnabled, image);
+
+      // Add AI message to the session
+      const aiMessage: Message = {
+        id: uuidv4(),
+        content: response,
         role: 'assistant',
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
-      
-      setSessions(prev => prev.map(session => {
-        if (session.id === currentSessionId) {
-          return {
-            ...session,
-            messages: [...session.messages, botMessage],
-            timestamp: Date.now()
-          };
-        }
-        return session;
-      }));
-    } catch (err) {
-      setError('Failed to get response from AI. Please try again.');
-      console.error('Error fetching AI response:', err);
+      addMessageToSession(currentSessionId, aiMessage);
+    } catch (e: any) {
+      setError(e.message || 'Failed to send message.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const deleteSession = (sessionId: string) => {
-    setSessions(prev => prev.filter(session => session.id !== sessionId));
-    
-    if (currentSessionId === sessionId) {
-      const remainingSessions = sessions.filter(session => session.id !== sessionId);
-      setCurrentSessionId(remainingSessions.length > 0 ? remainingSessions[0].id : null);
-    }
+  // Function to simulate an API call to the AI
+  const simulateAICall = async (content: string, webSearchEnabled: boolean, imageAnalysisEnabled: boolean, image?: string): Promise<string> => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        let aiResponse = `AI response to: "${content}"`;
+        if (webSearchEnabled) {
+          aiResponse += ' with web search enabled';
+        }
+        if (imageAnalysisEnabled && image) {
+          aiResponse += ' with image analysis enabled';
+        }
+        resolve(aiResponse);
+      }, 1500);
+    });
   };
 
-  const updateSessionName = (sessionId: string, name: string) => {
-    setSessions(prev => prev.map(session => {
+  // Function to update a session name
+  const updateSessionName = (sessionId: string, newName: string) => {
+    setSessions(sessions.map(session => {
       if (session.id === sessionId) {
-        return { ...session, name };
+        return {
+          ...session,
+          name: newName,
+        };
       }
       return session;
     }));
   };
 
-  const clearError = () => {
-    setError(null);
+  const toggleWebSearch = () => {
+    setWebSearchEnabled(prev => !prev);
+  };
+
+  const toggleImageAnalysis = () => {
+    setImageAnalysisEnabled(prev => !prev);
+  };
+
+  const value: ChatContextProps = {
+    sessions,
+    currentSessionId,
+    currentSession,
+    createNewSession,
+    switchSession,
+    deleteSession,
+    addMessageToSession,
+    sendMessage,
+    updateSessionName,
+    isLoading,
+    error,
+    webSearchEnabled,
+    imageAnalysisEnabled,
+    toggleWebSearch,
+    toggleImageAnalysis,
   };
 
   return (
-    <ChatContext.Provider
-      value={{
-        sessions,
-        currentSessionId,
-        isLoading,
-        error,
-        createNewSession,
-        switchSession,
-        sendMessage,
-        deleteSession,
-        updateSessionName,
-        clearError,
-        currentSession
-      }}
-    >
+    <ChatContext.Provider value={value}>
       {children}
     </ChatContext.Provider>
   );
 };
 
-export const useChat = (): ChatContextType => {
+// Create a custom hook to use the ChatContext
+export const useChat = () => {
   const context = useContext(ChatContext);
   if (!context) {
     throw new Error('useChat must be used within a ChatProvider');

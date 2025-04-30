@@ -9,6 +9,8 @@ interface ChatInputProps {
   uploadedImage: string | null;
   onClearImage: () => void;
   onImageUpload: (imageUrl: string) => void;
+  webSearchEnabled: boolean;
+  imageAnalysisEnabled: boolean;
 }
 
 const ChatInput: React.FC<ChatInputProps> = ({ 
@@ -16,11 +18,12 @@ const ChatInput: React.FC<ChatInputProps> = ({
   onChange, 
   uploadedImage, 
   onClearImage,
-  onImageUpload
+  onImageUpload,
+  webSearchEnabled,
+  imageAnalysisEnabled
 }) => {
   const { sendMessage, isLoading } = useChat();
   const [isRecording, setIsRecording] = useState(false);
-  const [webSearchEnabled, setWebSearchEnabled] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const handleSendMessage = () => {
@@ -121,14 +124,13 @@ const ChatInput: React.FC<ChatInputProps> = ({
         
         <div className={styles.inputActions}>
           <div className={styles.leftActions}>
-            <label className={styles.webSearchToggle}>
-              <input
-                type="checkbox"
-                checked={webSearchEnabled}
-                onChange={() => setWebSearchEnabled(!webSearchEnabled)}
-              />
-              <span className={styles.toggleLabel}>Web search</span>
-            </label>
+            {/* We don't need the checkbox here as it's controlled from outside */}
+            <span className={webSearchEnabled ? styles.toggleActive : ''}>
+              {webSearchEnabled && "Web search enabled"}
+            </span>
+            <span className={imageAnalysisEnabled ? styles.toggleActive : ''}>
+              {imageAnalysisEnabled && "Image analysis enabled"}
+            </span>
           </div>
           
           <div className={styles.rightActions}>

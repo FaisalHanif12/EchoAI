@@ -40,7 +40,7 @@ const MessageList: React.FC = () => {
 
   return (
     <div className={styles.messageList}>
-      {currentSession.messages.map((message) => (
+      {[...currentSession.messages].reverse().map((message) => (
         <div
           key={message.id}
           className={`${styles.messageContainer} ${

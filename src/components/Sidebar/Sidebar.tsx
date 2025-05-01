@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useChat } from '../../contexts/ChatContext';
 import styles from './Sidebar.module.css';
@@ -52,6 +51,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, closeSidebar }) => {
     return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
   };
 
+  const handleNewChatClick = () => {
+    createNewSession();
+    if (window.innerWidth <= 1023) {
+      closeSidebar();
+    }
+  };
+
   return (
     <>
       {isOpen && <div className={styles.overlay} onClick={closeSidebar}></div>}
@@ -59,7 +65,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, closeSidebar }) => {
         <div className={styles.sidebarHeader}>
           <button 
             className={`${styles.newChatButton} pill-button hover-transition`}
-            onClick={createNewSession}
+            onClick={handleNewChatClick}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
               <path d="M12 4v16m-8-8h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -165,6 +171,18 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, closeSidebar }) => {
               {searchTerm ? 'No matching chats found' : 'No chats yet'}
             </div>
           )}
+        </div>
+        
+        <div className={styles.newChatBottom}>
+          <button 
+            className={`${styles.newChatButtonBottom} pill-button hover-transition`}
+            onClick={handleNewChatClick}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{marginRight: '8px'}}>
+              <path d="M12 4v16m-8-8h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+            New Chat
+          </button>
         </div>
         
         <div className={styles.sidebarFooter}>

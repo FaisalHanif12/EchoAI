@@ -24,6 +24,24 @@
   padding: var(--spacing-md) var(--spacing-md) 180px var(--spacing-md);
   scroll-behavior: smooth;
   height: calc(100vh - 60px);
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-accent-primary) transparent;
+  display: flex;
+  flex-direction: column-reverse;
+  max-height: 100%;
+}
+
+.messageContainer::-webkit-scrollbar {
+  width: 6px;
+}
+
+.messageContainer::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.messageContainer::-webkit-scrollbar-thumb {
+  background-color: var(--color-accent-primary);
+  border-radius: 20px;
 }
 
 .promptSuggestionsContainer {
@@ -150,9 +168,24 @@
 
 .togglesContainer {
   display: flex;
-  justify-content: flex-end;
-  gap: var(--spacing-lg);
+  justify-content: flex-start;
   margin-bottom: var(--spacing-md);
+}
+
+.togglesLeft {
+  display: flex;
+  gap: var(--spacing-lg);
+}
+
+@media (max-width: 768px) {
+  .togglesLeft {
+    display: flex;
+    flex-direction: row;
+    gap: var(--spacing-md);
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+  }
 }
 
 .toggleWrapper {
@@ -161,6 +194,14 @@
   gap: var(--spacing-sm);
   color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
+}
+
+@media (max-width: 768px) {
+  .toggleWrapper {
+    flex: 1;
+    white-space: nowrap;
+    justify-content: flex-start;
+  }
 }
 
 .toggleButton {
@@ -218,17 +259,28 @@
   }
   
   .messageContainer {
-    padding-bottom: 180px;
+    padding-bottom: 220px;
   }
   
   .togglesContainer {
     flex-direction: column;
-    align-items: flex-end;
+    align-items: flex-start;
     gap: var(--spacing-sm);
   }
   
+  .togglesLeft {
+    width: 100%;
+    flex-direction: row;
+    gap: var(--spacing-sm);
+    justify-content: space-between;
+  }
+  
   .inputArea {
-    padding: var(--spacing-sm);
+    padding: var(--spacing-md) var(--spacing-sm);
+  }
+  
+  .promptSuggestionsContainer {
+    margin-bottom: var(--spacing-md);
   }
 }
 

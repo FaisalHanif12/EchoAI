@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { useChat } from '../../contexts/ChatContext';
 import { useIsMobile } from '../../hooks/use-mobile';
@@ -23,12 +22,15 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ sidebarOpen }) => {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [webSearchEnabled, setWebSearchEnabled] = useState(false);
   const [imageAnalysisEnabled, setImageAnalysisEnabled] = useState(false);
+  const messageContainerRef = useRef<HTMLDivElement>(null);
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
   
   // Scroll to bottom when messages change or when loading completes
   useEffect(() => {
-    scrollToBottom();
+    if (currentSession?.messages?.length) {
+      scrollToBottom();
+    }
   }, [currentSession?.messages, isLoading]);
 
   // Scroll to bottom when component mounts
@@ -80,7 +82,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ sidebarOpen }) => {
     <main className={`${styles.chatWindow} ${sidebarOpen && !isMobile ? styles.withSidebar : styles.fullWidth}`}>
       {!currentSession ? renderEmptyState() : (
         <>
-          <div className={styles.messageContainer}>
+          <div className={styles.messageContainer} ref={messageContainerRef}>
             <MessageList />
             {isLoading && (
               <div className={`${styles.typingIndicator} glass-card`}>
@@ -109,27 +111,29 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ sidebarOpen }) => {
                   <PromptSuggestions onSelectPrompt={handlePromptSelect} />
                 </div>
                 <div className={styles.togglesContainer}>
-                  <div className={styles.toggleWrapper}>
-                    <span>Web Search</span>
-                    <button 
-                      className={`${styles.toggleButton} ${webSearchEnabled ? styles.toggleActive : ''}`}
-                      onClick={toggleWebSearch}
-                      aria-label={webSearchEnabled ? "Disable web search" : "Enable web search"}
-                      aria-pressed={webSearchEnabled}
-                    >
-                      <span className={styles.toggleSlider}></span>
-                    </button>
-                  </div>
-                  <div className={styles.toggleWrapper}>
-                    <span>Image Analysis</span>
-                    <button 
-                      className={`${styles.toggleButton} ${imageAnalysisEnabled ? styles.toggleActive : ''}`}
-                      onClick={toggleImageAnalysis}
-                      aria-label={imageAnalysisEnabled ? "Disable image analysis" : "Enable image analysis"}
-                      aria-pressed={imageAnalysisEnabled}
-                    >
-                      <span className={styles.toggleSlider}></span>
-                    </button>
+                  <div className={styles.togglesLeft}>
+                    <div className={styles.toggleWrapper}>
+                      <span>Web Search</span>
+                      <button 
+                        className={`${styles.toggleButton} ${webSearchEnabled ? styles.toggleActive : ''}`}
+                        onClick={toggleWebSearch}
+                        aria-label={webSearchEnabled ? "Disable web search" : "Enable web search"}
+                        aria-pressed={webSearchEnabled}
+                      >
+                        <span className={styles.toggleSlider}></span>
+                      </button>
+                    </div>
+                    <div className={styles.toggleWrapper}>
+                      <span>Image Analysis</span>
+                      <button 
+                        className={`${styles.toggleButton} ${imageAnalysisEnabled ? styles.toggleActive : ''}`}
+                        onClick={toggleImageAnalysis}
+                        aria-label={imageAnalysisEnabled ? "Disable image analysis" : "Enable image analysis"}
+                        aria-pressed={imageAnalysisEnabled}
+                      >
+                        <span className={styles.toggleSlider}></span>
+                      </button>
+                    </div>
                   </div>
                 </div>
                 <ChatInput 

@@ -7,7 +7,7 @@
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(2px);
-  z-index: 4;
+  z-index: 14;
 }
 
 .sidebar {
@@ -18,7 +18,7 @@
   background-color: var(--color-bg-secondary);
   border-right: 1px solid var(--color-border);
   transition: transform var(--transition-normal);
-  z-index: 5;
+  z-index: 15;
   position: fixed;
   top: 0;
   left: 0;
@@ -298,7 +298,7 @@
 }
 
 /* Mobile styles */
-@media (max-width: 1023px) {
+@media (max-width: 900px) {
   .overlay {
     display: block;
   }

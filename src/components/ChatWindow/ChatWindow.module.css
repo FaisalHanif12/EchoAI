@@ -29,6 +29,7 @@
   display: flex;
   flex-direction: column-reverse;
   max-height: 100%;
+  margin-top: var(--spacing-lg);
 }
 
 .messageContainer::-webkit-scrollbar {
@@ -47,6 +48,8 @@
 .promptSuggestionsContainer {
   width: 100%;
   overflow-x: auto;
+  margin-bottom: var(--spacing-md);
+  padding: 0 var(--spacing-md);
 }
 
 .emptyState {
@@ -112,7 +115,7 @@
   position: fixed;
   bottom: 0;
   width: 100%;
-  padding: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-xl);
   background: linear-gradient(0deg, var(--color-bg-primary) 80%, transparent);
   z-index: 10;
   left: 0;
@@ -170,6 +173,7 @@
   display: flex;
   justify-content: flex-start;
   margin-bottom: var(--spacing-md);
+  padding: 0 var(--spacing-md);
 }
 
 .togglesLeft {
@@ -177,7 +181,7 @@
   gap: var(--spacing-lg);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .togglesLeft {
     display: flex;
     flex-direction: row;
@@ -196,7 +200,7 @@
   font-size: var(--font-size-sm);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .toggleWrapper {
     flex: 1;
     white-space: nowrap;
@@ -247,7 +251,7 @@
 }
 
 /* Media query for mobile */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .withSidebar {
     width: 100%;
     margin-left: 0;
@@ -260,6 +264,7 @@
   
   .messageContainer {
     padding-bottom: 220px;
+    margin-top: 0;
   }
   
   .togglesContainer {
@@ -277,6 +282,7 @@
   
   .inputArea {
     padding: var(--spacing-md) var(--spacing-sm);
+    z-index: 5;
   }
   
   .promptSuggestionsContainer {
@@ -284,7 +290,7 @@
   }
 }
 
-@media (min-width: 769px) and (max-width: 1023px) {
+@media (min-width: 901px) and (max-width: 1023px) {
   .withSidebar {
     width: calc(100% - 280px);
     margin-left: 280px;

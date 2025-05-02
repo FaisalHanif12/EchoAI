@@ -39,8 +39,8 @@ const MessageList: React.FC = () => {
   }
 
   return (
-    <div className={styles.messageList}>
-      {[...currentSession.messages].reverse().map((message) => (
+    <div className={styles.messageList} style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 200px)' }}>
+      {currentSession.messages.map((message) => (
         <div
           key={message.id}
           className={`${styles.messageContainer} ${

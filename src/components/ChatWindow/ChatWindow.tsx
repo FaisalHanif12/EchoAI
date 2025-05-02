@@ -82,6 +82,12 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ sidebarOpen }) => {
     <main className={`${styles.chatWindow} ${sidebarOpen && !isMobile ? styles.withSidebar : styles.fullWidth}`}>
       {!currentSession ? renderEmptyState() : (
         <>
+          {currentSession.messages.length === 0 && (
+            <div className={styles.promptSuggestionsContainer}>
+              <PromptSuggestions onSelectPrompt={handlePromptSelect} />
+            </div>
+          )}
+          
           <div className={styles.messageContainer} ref={messageContainerRef}>
             <MessageList />
             {isLoading && (
@@ -107,9 +113,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ sidebarOpen }) => {
           <div className={styles.inputArea}>
             {currentSession && (
               <>
-                <div className={styles.promptSuggestionsContainer}>
-                  <PromptSuggestions onSelectPrompt={handlePromptSelect} />
-                </div>
                 <div className={styles.togglesContainer}>
                   <div className={styles.togglesLeft}>
                     <div className={styles.toggleWrapper}>

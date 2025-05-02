@@ -46,10 +46,17 @@
 }
 
 .promptSuggestionsContainer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   width: 100%;
-  overflow-x: auto;
-  margin-bottom: var(--spacing-md);
-  padding: 0 var(--spacing-md);
+  max-width: 800px;
+  padding: var(--spacing-md);
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .emptyState {

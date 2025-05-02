@@ -1,18 +1,24 @@
 
 .suggestionsContainer {
   display: flex;
-  width: 100%;
-  margin-bottom: var(--spacing-md);
-  overflow-x: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-accent-primary) var(--color-bg-secondary);
+  flex-wrap: wrap;
+  justify-content: center; /* Center items horizontally */
+  gap: var(--spacing-md);
+  max-width: 800px; /* Increased width for better layout */
+  margin: 0 auto; /* Center horizontally */
+  padding: var(--spacing-lg); /* Increased padding for better spacing */
+  position: relative;
+  z-index: 10; /* Ensure suggestions appear above other elements */
+  background: rgba(255, 255, 255, 0.03); /* Subtle background */
+  border-radius: var(--border-radius-lg); /* Rounded corners */
+  backdrop-filter: blur(10px); /* Enhanced blur effect */
 }
 
 .suggestions {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: var(--spacing-md);
-  padding-bottom: var(--spacing-sm);
-  flex-wrap: nowrap;
   width: 100%;
 }
 
@@ -31,48 +37,59 @@
 }
 
 .suggestionButton {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.08);
   border: 1px solid var(--color-border);
   font-size: var(--font-size-sm);
-  white-space: nowrap;
+  white-space: normal; /* Changed from nowrap to allow text wrapping */
   border-radius: 9999px;
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
   cursor: pointer;
-  transition: transform var(--transition-fast), background-color var(--transition-fast), box-shadow var(--transition-fast);
-  backdrop-filter: blur(5px);
+  transition: all var(--transition-fast);
+  backdrop-filter: blur(8px);
+  flex: 0 1 calc(33% - var(--spacing-md)); /* Make buttons take up roughly 1/3 of container width */
+  min-width: 180px;
+  max-width: 220px; /* Added max-width to prevent buttons from getting too wide */
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  margin: var(--spacing-xs);
+  letter-spacing: 0.3px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  overflow: hidden; /* Hide overflow content */
+  text-overflow: ellipsis; /* Add ellipsis for overflowing text */
+  display: flex; /* Use flexbox for better text centering */
+  justify-content: center; /* Center text horizontally */
+  align-items: center; /* Center text vertically */
 }
 
 .suggestionButton:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px) scale(1.05);
   background: linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-secondary));
   border-color: transparent;
   color: white;
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+  box-shadow: 0 8px 20px rgba(139, 92, 246, 0.5);
 }
 
 @media (max-width: 900px) {
   .suggestionsContainer {
-    overflow-x: visible;
-    margin-top: var(--spacing-lg);
-    margin-bottom: var(--spacing-lg);
-    padding: 0 var(--spacing-sm);
+    max-width: 95%;
+    margin: var(--spacing-lg) auto;
+    padding: var(--spacing-sm);
   }
   
   .suggestions {
-    gap: var(--spacing-md);
-    justify-content: center;
-    flex-wrap: wrap;
-    padding-bottom: var(--spacing-md);
+    gap: var(--spacing-sm);
   }
   
   .suggestionButton {
     padding: var(--spacing-sm) var(--spacing-md);
     font-size: var(--font-size-sm);
-    flex-shrink: 0;
-    margin-bottom: var(--spacing-md);
-    min-width: 120px;
-    text-align: center;
+    flex: 0 1 calc(50% - var(--spacing-sm)); /* 2 buttons per row on medium screens */
+    min-width: 140px;
+    max-width: 180px; /* Adjusted max-width for medium screens */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: auto; /* Allow height to adjust based on content */
+    min-height: 44px; /* Ensure minimum height for touch targets */
   }
   
   .suggestionButton:active {
@@ -80,5 +97,16 @@
     background: linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-secondary));
     border-color: transparent;
     color: white;
+  }
+}
+
+@media (max-width: 480px) {
+  .suggestionButton {
+    flex: 0 1 100%; /* Full width on very small screens */
+    min-width: 100%;
+    max-width: 100%; /* Allow full width on small screens */
+    padding: var(--spacing-sm) var(--spacing-md);
+    white-space: normal; /* Ensure text wrapping on small screens */
+    height: auto; /* Allow height to adjust based on content */
   }
 }

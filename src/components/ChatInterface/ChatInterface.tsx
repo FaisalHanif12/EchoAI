@@ -11,14 +11,25 @@ const ChatInterface: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const isMobile = useIsMobile();
   
-  // On mobile, sidebar is closed by default
+  // Show sidebar automatically only on screens wider than 900px
   useEffect(() => {
-    if (isMobile) {
-      setIsSidebarOpen(false);
-    } else {
-      setIsSidebarOpen(true);
-    }
-  }, [isMobile]);
+    const handleResize = () => {
+      if (window.innerWidth > 900) {
+        setIsSidebarOpen(true);
+      } else {
+        setIsSidebarOpen(false);
+      }
+    };
+    
+    // Set initial state
+    handleResize();
+    
+    // Add event listener
+    window.addEventListener('resize', handleResize);
+    
+    // Clean up
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -29,8 +40,8 @@ const ChatInterface: React.FC = () => {
       <div className={styles.chatInterface}>
         <Header toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
         <div className={styles.content}>
-          {/* On mobile, sidebar is only visible when open */}
-          {(isSidebarOpen || !isMobile) && 
+          {/* Show sidebar based on screen width or toggle state */}
+          {isSidebarOpen && 
             <Sidebar isOpen={isSidebarOpen} closeSidebar={() => setIsSidebarOpen(false)} />
           }
           <ChatWindow sidebarOpen={isSidebarOpen} />

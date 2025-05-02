@@ -63,15 +63,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, closeSidebar }) => {
       {isOpen && <div className={styles.overlay} onClick={closeSidebar}></div>}
       <aside className={`${styles.sidebar} ${isOpen ? styles.open : ''}`}>
         <div className={styles.sidebarHeader}>
-          <button 
-            className={`${styles.newChatButton} pill-button hover-transition`}
-            onClick={handleNewChatClick}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path d="M12 4v16m-8-8h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-            New Chat
-          </button>
           
           <div className={styles.searchContainer}>
             <svg className={styles.searchIcon} width="16" height="16" viewBox="0 0 24 24" fill="none">

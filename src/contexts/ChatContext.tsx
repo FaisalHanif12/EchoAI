@@ -94,10 +94,20 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const addMessageToSession = (sessionId: string, message: Message) => {
     setSessions(sessions.map(session => {
       if (session.id === sessionId) {
+        // Update session name based on first user message if it's still the default name
+        let updatedName = session.name;
+        if (session.name === 'New Chat' && message.role === 'user' && message.content.trim()) {
+          // Use first 30 characters of user message as session name
+          updatedName = message.content.length > 30 
+            ? `${message.content.substring(0, 30)}...` 
+            : message.content;
+        }
+        
         return {
           ...session,
+          name: updatedName,
           messages: [...session.messages, message],
-          lastMessage: message.content,
+          lastMessage: message.role === 'user' ? `You: ${message.content}` : message.content,
         };
       }
       return session;
@@ -147,7 +157,8 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const simulateAICall = async (content: string, webSearchEnabled: boolean, imageAnalysisEnabled: boolean, image?: string): Promise<string> => {
     return new Promise((resolve) => {
       setTimeout(() => {
-        let aiResponse = `AI response to: "${content}"`;
+        // Removed the "AI response to:" prefix
+        let aiResponse = `Here's my response to your message about "${content}"`;
         if (webSearchEnabled) {
           aiResponse += ' with web search enabled';
         }

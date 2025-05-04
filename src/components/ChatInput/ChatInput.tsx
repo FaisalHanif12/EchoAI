@@ -25,6 +25,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
   const { sendMessage, isLoading } = useChat();
   const [isRecording, setIsRecording] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const recognitionRef = useRef<any>(null);
   
   const handleSendMessage = () => {
     if (!value.trim() && !uploadedImage) return;
@@ -60,7 +61,17 @@ const ChatInput: React.FC<ChatInputProps> = ({
     fileInputRef.current?.click();
   };
 
-  const startVoiceRecognition = () => {
+  const toggleVoiceRecognition = () => {
+    if (isRecording) {
+      // Stop recording if already active
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+        recognitionRef.current = null;
+      }
+      setIsRecording(false);
+      return;
+    }
+
     if (!('webkitSpeechRecognition' in window)) {
       alert('Your browser does not support speech recognition');
       return;
@@ -70,21 +81,39 @@ const ChatInput: React.FC<ChatInputProps> = ({
     const recognition = new SpeechRecognition();
     recognition.lang = 'en-US';
     recognition.interimResults = false;
+    recognition.continuous = true; // Keep recording until manually stopped
     
     setIsRecording(true);
+    recognitionRef.current = recognition;
     
     recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
+      const lastResultIndex = event.results.length - 1;
+      const transcript = event.results[lastResultIndex][0].transcript;
       onChange(value + ' ' + transcript);
     };
     
     recognition.onerror = (event) => {
       console.error('Speech recognition error', event.error);
       setIsRecording(false);
+      recognitionRef.current = null;
     };
     
     recognition.onend = () => {
-      setIsRecording(false);
+      // Only set recording to false if we're not in continuous mode
+      // or if there was an error
+      if (!recognition.continuous) {
+        setIsRecording(false);
+        recognitionRef.current = null;
+      } else if (isRecording) {
+        // If still supposed to be recording but ended, restart
+        try {
+          recognition.start();
+        } catch (e) {
+          console.error('Failed to restart recognition', e);
+          setIsRecording(false);
+          recognitionRef.current = null;
+        }
+      }
     };
     
     recognition.start();
@@ -155,9 +184,9 @@ const ChatInput: React.FC<ChatInputProps> = ({
             
             <button 
               className={`${styles.actionButton} ${isRecording ? styles.recording : ''}`}
-              onClick={startVoiceRecognition}
-              disabled={isLoading || isRecording}
-              aria-label={isRecording ? "Recording..." : "Start voice input"}
+              onClick={toggleVoiceRecognition}
+              disabled={isLoading}
+              aria-label={isRecording ? "Stop recording" : "Start voice input"}
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                 <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" 
